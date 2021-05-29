@@ -1,0 +1,10 @@
+.tag-container {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.tag {
+    margin-right: 5px;
+    min-width: 50px;
+    background-color: #C4A2FC !important;
+}

@@ -1,0 +1,8 @@
+.list-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    background-color: #3D2F4E;
+    padding: 10px;
+    overflow: auto;
+}

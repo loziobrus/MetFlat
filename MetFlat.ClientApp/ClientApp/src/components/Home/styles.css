@@ -1,0 +1,48 @@
+.content-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3D2F4E;
+}
+
+.search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 1000px;
+    height: 70px;
+    padding: 6px;
+    background-color: white;
+    border-radius: 4px;
+}
+
+.search-container .MuiFormControl-marginNormal {
+    margin: 0;
+}
+
+.search-container .search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #A272DC;
+    height: 100%;
+    width: 50px;
+}
+
+.search-container .search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #A272DC;
+    height: 100%;
+    margin: 0;
+}
+
+.search-container .search-button:hover {
+    background-color: #7b57a7;
+}
+
+.guest-select {
+    margin-top: 17px;
+}

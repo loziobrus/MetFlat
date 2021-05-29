@@ -1,0 +1,78 @@
+.register-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3D2F4E;
+}
+
+.register-container .login-form {
+    min-width: 450px;
+    min-height: 450px;
+    background-color: #221830;
+    box-shadow: 0 0 10px #171020;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.login-form > div {
+    margin: 10px 0 0 0;
+}
+
+.login-form .form-head label {
+    color: #BCA5D7;
+    font-size: 22px;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.login-form .form-fields {
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+}
+
+.form-fields .input-box {
+    flex-direction: column;
+}
+
+.form-fields .button-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-button {
+    margin: 10px 0px !important;
+    background-color: #BCA5D7 !important;
+    width: 130px !important;
+}
+
+.login-input {
+    background-color: white;
+    border-radius: 4px;
+    width: 100%;
+    margin: 10px 0px !important;
+}
+
+.just-text {
+    color: #BCA5D7;
+}
+
+.register {
+    border-bottom: 1px solid #BCA5D7;
+    cursor: pointer;
+}
+
+.register:hover  {
+    color: #BCA5D7;
+    text-decoration: none;
+}
+
+.text-container {
+    display: flex;
+    justify-content: center;
+}

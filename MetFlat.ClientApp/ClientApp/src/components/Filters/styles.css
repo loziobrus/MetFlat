@@ -1,0 +1,91 @@
+.city-input {
+    width: 200px !important;
+    background-color: white;
+    border-radius: 4px;
+}
+
+.date-input {
+    flex-direction: row !important;
+}
+
+.date-input button {
+    padding: 0 10px 0 0 !important;
+}
+
+.date-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    flex-direction: row;
+}
+
+.filters {
+    width: 320px;
+    background-color: #221830;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    height: 100%;
+}
+
+.filters > * {
+    margin: 20px 0;
+}
+
+.filter-button {
+    height: 40px;
+    background-color: white;
+    border-radius: 4px;
+    width: 135px;
+    padding-left: 10px !important;
+}
+
+.value-select svg {
+    margin-right: 10px;
+}
+
+.buttons-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-around;
+    height: 150px;
+}
+
+.date-container .MuiFormControl-marginNormal {
+    margin: 0px !important;
+}
+
+.checkbox-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #BCA5D7;
+    width: 100%;
+}
+
+.checkbox-column {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+}
+
+.checkbox-table {
+    display: flex;
+    justify-content: center;
+}
+
+.checkbox-container .MuiCheckbox-colorPrimary.Mui-checked {
+    color: #BCA5D7;
+}
+
+.checkbox-container .MuiCheckbox-root {
+    color: #BCA5D7;
+}
+
+.filters label {
+    font-size: 24px;
+}

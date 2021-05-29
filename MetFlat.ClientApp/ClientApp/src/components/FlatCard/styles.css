@@ -1,0 +1,13 @@
+.card {
+    max-width: 300px;
+    max-height: 400px;
+    margin: 10px;
+}
+
+.card-image {
+    height: 170px;
+}
+
+.more-button {
+    color: #9F65FF !important;
+}
