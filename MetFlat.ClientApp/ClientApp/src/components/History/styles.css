@@ -1,0 +1,38 @@
+.history-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #3D2F4E;
+    padding: 50px 40px;
+    overflow: auto;
+}
+
+.history-container > * {
+    margin-bottom: 30px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    color: #BCA5D7;
+    margin-bottom: 20px;
+}
+
+.history-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 600px;
+    height: 70px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 4px;
+}
+
+.history-filters .MuiFormControl-marginNormal {
+    margin: 0px !important;
+}
+
+.rental-list > * {
+    margin: 20px 0;
+}

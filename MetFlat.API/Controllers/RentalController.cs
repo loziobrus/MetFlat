@@ -20,8 +20,22 @@ namespace MetFlat.API.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<RentalDTO>> GetAll()
         {
-            var flats = rentalService.GetAll();
-            return Ok(flats);
+            var rentals = rentalService.GetAll();
+            return Ok(rentals);
+        }
+
+        [HttpGet("getByOwner/{id}")]
+        public ActionResult<IEnumerable<RentalDTO>> GetByOwner(string id)
+        {
+            var rentals = rentalService.GetByOwnerId(id);
+            return Ok(rentals);
+        }
+
+        [HttpGet("getByTenant/{id}")]
+        public ActionResult<IEnumerable<RentalDTO>> GetByTenant(string id)
+        {
+            var rentals = rentalService.GetByTenantId(id);
+            return Ok(rentals);
         }
 
         [HttpGet("{id}")]

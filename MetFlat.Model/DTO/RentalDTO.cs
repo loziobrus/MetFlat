@@ -11,6 +11,10 @@ namespace MetFlat.Model.DTO
 
         public string TenantId { get; set; }
 
+        public string FlatPhoto { get; set; }
+
+        public string Address { get; set; }
+
         public Status RentalStatus { get; set; }
 
         public DateTime StartDate { get; set; }

@@ -36,7 +36,7 @@ namespace MetFlat.BusinessLogic.Services
             throw new FormatException("User doesn't exist or wrong password.");
         }
 
-        public async Task<UserLoginDTO> SignUp(UserDTO userDTO)
+        public async Task<UserLoginDTO> SignUp(UserRegisterDTO userDTO)
         {
             if(await _userManager.FindByEmailAsync(userDTO.Email) != null)
             {
@@ -49,11 +49,6 @@ namespace MetFlat.BusinessLogic.Services
                 Email = userDTO.Email,
                 Name = userDTO.Name,
                 Age = userDTO.Age,
-                Bio = userDTO.Bio,
-                City = userDTO.City,
-                PhoneNumber = userDTO.PhoneNumber,
-                Photo = userDTO.Photo,
-                Active = userDTO.Active
             };
 
             var result = await _userManager.CreateAsync(user, userDTO.Password);

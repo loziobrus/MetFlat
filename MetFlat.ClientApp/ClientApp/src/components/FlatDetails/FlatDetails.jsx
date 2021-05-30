@@ -19,12 +19,6 @@ import Carousel from 'react-elastic-carousel';
 
 
 class FlatDetails extends React.Component {
-    componentDidMount = async () => {
-        getFlatsByOwner(this.props.user.id).then(res => {
-            store.dispatch(SetFlats(res.data))
-        })
-    }
-
     render() {
         const { flats, user, currentFlat } = this.props
 
@@ -38,7 +32,7 @@ class FlatDetails extends React.Component {
                     <div className="address-price">
                         <div className="address">
                             <h4>Address</h4>
-                            <label className="flat-text">{currentFlat.address}</label>
+                            <label className="flat-text">{currentFlat.address}, {currentFlat.city}</label>
                         </div>
                         <div className="address">
                             <h4>Price</h4>
@@ -47,6 +41,7 @@ class FlatDetails extends React.Component {
                     </div>
                     <div className="description">
                         <h4>Description</h4>
+                        <label className="flat-text">{currentFlat.roomCount} rooms, {currentFlat.flatValue} m2</label>
                         <p className="flat-text">{currentFlat.description}</p>
                     </div>
                     <div className="feature-container">

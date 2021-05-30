@@ -1,7 +1,7 @@
 import axios from "axios"
 
 export const getUser = async (id) => {
-    return await axios.get(`https://localhost:44356/api/account${id}`).then(res => {
+    return await axios.get(`https://localhost:44356/api/account/${id}`).then(res => {
         return res
     })
 }

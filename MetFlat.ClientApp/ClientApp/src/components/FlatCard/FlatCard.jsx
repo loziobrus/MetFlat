@@ -12,7 +12,8 @@ import TagContainer from '../TagContainer/TagContainer'
 import "./styles.css"
 import { Link } from 'react-router-dom';
 import { store } from '../..';
-import { SetFlat } from '../../store/flats/actions';
+import { SetFlat, SetFlatOwner } from '../../store/flats/actions';
+import { getUser } from '../../api/accountAPI';
 
 class FlatCard extends React.Component {
   constructor(props){
@@ -21,6 +22,10 @@ class FlatCard extends React.Component {
   
   handleMoreClick = () => {
     store.dispatch(SetFlat(this.props.flat))
+    getUser(this.props.flat.ownerId).then(res => {
+      if(res.status === 200)
+        store.dispatch(SetFlatOwner(res.data))
+    })
   }
   
   render () {

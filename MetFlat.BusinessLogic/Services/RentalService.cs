@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
@@ -41,6 +42,44 @@ namespace MetFlat.BusinessLogic.Services
         {
             var rental = await unitOfWork.RentalRepository.GetById(id);
             return mapper.Map<RentalDTO>(rental);
+        }
+
+        public IEnumerable<RentalDTO> GetByOwnerId(string id)
+        {
+            var rentals = unitOfWork.RentalRepository.GetAll();//.Where(r => r.Flat.OwnerId == id);
+            var rentalsDTO = mapper.Map<IEnumerable<RentalDTO>>(rentals);
+            foreach(var rentalDTO in rentalsDTO)
+            {
+                foreach(var rental in rentals)
+                {
+                    if(rentalDTO.Id == rental.Id)
+                    {
+                        rentalDTO.FlatPhoto = rental.Flat.Photos[0].Path;
+                        rentalDTO.Address = rental.Flat.City + ", " + rental.Flat.Address;
+                    }
+                }
+            }
+            
+            return rentalsDTO;
+        }
+
+        public IEnumerable<RentalDTO> GetByTenantId(string id)
+        {
+            var rentals = unitOfWork.RentalRepository.GetAll().Where(r => r.TenantId == id);
+            var rentalsDTO = mapper.Map<IEnumerable<RentalDTO>>(rentals);
+            foreach (var rentalDTO in rentalsDTO)
+            {
+                foreach (var rental in rentals)
+                {
+                    if (rentalDTO.Id == rental.Id)
+                    {
+                        rentalDTO.FlatPhoto = rental.Flat.Photos[0].Path;
+                        rentalDTO.Address = rental.Flat.City + ", " + rental.Flat.Address;
+                    }
+                }
+            }
+
+            return rentalsDTO;
         }
 
         public async Task Insert(RentalDTO rentalDTO)

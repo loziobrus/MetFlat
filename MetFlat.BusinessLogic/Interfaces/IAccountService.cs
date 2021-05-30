@@ -7,7 +7,7 @@ namespace MetFlat.BusinessLogic.Interfaces
     {
         public Task<UserDTO> GetUser(string id);
 
-        public Task<UserLoginDTO> SignUp(UserDTO user);
+        public Task<UserLoginDTO> SignUp(UserRegisterDTO user);
 
         public Task<UserDTO> SignIn(UserLoginDTO user);
 

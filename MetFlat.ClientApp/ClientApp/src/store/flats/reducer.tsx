@@ -7,7 +7,8 @@ import {
 
 export const initialState: IFlatState = {
     flats: [],
-    currentFlat: {}
+    currentFlat: {},
+    flatOwner: {}
 }
 
 const flatReducer: Reducer<IFlatState> = (state: IFlatState = initialState, action) => {
@@ -16,6 +17,8 @@ const flatReducer: Reducer<IFlatState> = (state: IFlatState = initialState, acti
             return { ...state, flats: action.payload.flats }
         case FlatActionTypes.SET_FLAT:
             return { ...state, currentFlat: action.payload.flat }       
+        case FlatActionTypes.SET_FLAT_OWNER:
+            return { ...state, flatOwner: action.payload.owner }  
         case FlatActionTypes.ADD_FLAT:
             return { ...state, flats: [...state.flats, action.payload.flat] }
         case FlatActionTypes.EDIT_FLAT: {

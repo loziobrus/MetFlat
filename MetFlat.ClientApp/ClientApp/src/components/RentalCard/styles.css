@@ -1,0 +1,36 @@
+.rental-list .card {
+    width: 100%;
+    height: 100px;
+}
+
+.rental-list .card-image {
+    height: 100px;
+    width: 200px;
+}
+
+.rental-card {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+}
+
+.rental-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.rental-content h5 {
+    margin: 0px !important;
+}
+
+.rental-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.rental-info > * {
+    margin: 5px !important;
+}

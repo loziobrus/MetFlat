@@ -38,7 +38,16 @@ class Home extends React.Component<RouteComponentProps, IState> {
   onValueChange = (property, value) => {
     const filters = {
       ...this.state.filters,
-      [property]: value.target.value
+      [property]: value
+    }
+
+    this.setState({ filters })
+  }
+
+  onGuestNumberChange = value => {
+    const filters = {
+      ...this.state.filters,
+      guestNumber: value.target.value
     }
 
     this.setState({ filters })
@@ -79,6 +88,8 @@ class Home extends React.Component<RouteComponentProps, IState> {
             />
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
+            autoOk
+            disablePast
             disableToolbar
             variant="inline"
             format="MM/dd/yyyy"
@@ -92,13 +103,15 @@ class Home extends React.Component<RouteComponentProps, IState> {
             }}
             />
           <KeyboardDatePicker
+            autoOk
+            disablePast
             disableToolbar
             variant="inline"
             format="MM/dd/yyyy"
             margin="normal"
             id="date-picker-inline"
             label="Check-out"
-            value={filters.endtDate}
+            value={filters.endDate}
             onChange={checkOutDate => this.onValueChange("endDate", checkOutDate)}
             KeyboardButtonProps={{
               'aria-label': 'change date',
@@ -108,7 +121,7 @@ class Home extends React.Component<RouteComponentProps, IState> {
           <Select
             className="guest-select"
             value={filters.guestNumber}
-            onChange={guests => this.onValueChange("guestNumber", guests)}
+            onChange={guests => this.onGuestNumberChange(guests)}
             >
             <MenuItem value={1}>1 Guest</MenuItem>
             <MenuItem value={2}>2 Guests</MenuItem>

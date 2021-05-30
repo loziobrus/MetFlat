@@ -9,6 +9,10 @@ namespace MetFlat.BusinessLogic.Interfaces
     {
         public IEnumerable<RentalDTO> GetAll();
 
+        public IEnumerable<RentalDTO> GetByOwnerId(string id);
+
+        public IEnumerable<RentalDTO> GetByTenantId(string id);
+
         public Task<RentalDTO> GetById(int Id);
 
         public Task Insert(RentalDTO rentalDTO);
@@ -20,8 +24,6 @@ namespace MetFlat.BusinessLogic.Interfaces
         public void Notify(Rental rental);
 
         public Task ApproveRental(int id);
-
-        //public Task RejectRental(int id);
 
         public Task CancelRental(int id);
     }
