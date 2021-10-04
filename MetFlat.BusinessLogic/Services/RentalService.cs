@@ -1,16 +1,17 @@
 ﻿using AutoMapper;
+using MailKit.Net.Smtp;
 using MetFlat.BusinessLogic.Interfaces;
 using MetFlat.DataAccess.Interfaces;
 using MetFlat.Model.DTO;
 using MetFlat.Model.Entities;
 using MetFlat.Model.Enums;
 using Microsoft.AspNetCore.Identity;
+using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -46,7 +47,7 @@ namespace MetFlat.BusinessLogic.Services
 
         public IEnumerable<RentalDTO> GetByOwnerId(string id)
         {
-            var rentals = unitOfWork.RentalRepository.GetAll();//.Where(r => r.Flat.OwnerId == id);
+            var rentals = unitOfWork.RentalRepository.GetAll().Where(r => r.Flat.OwnerId == id);
             var rentalsDTO = mapper.Map<IEnumerable<RentalDTO>>(rentals);
             foreach(var rentalDTO in rentalsDTO)
             {
@@ -65,7 +66,45 @@ namespace MetFlat.BusinessLogic.Services
 
         public IEnumerable<RentalDTO> GetByTenantId(string id)
         {
-            var rentals = unitOfWork.RentalRepository.GetAll().Where(r => r.TenantId == id);
+            var rentals = unitOfWork.RentalRepository.GetAll().Where(r => r.TenantId == id).OrderByDescending(r => r.StartDate);
+            var rentalsDTO = mapper.Map<IEnumerable<RentalDTO>>(rentals);
+            foreach (var rentalDTO in rentalsDTO)
+            {
+                foreach (var rental in rentals)
+                {
+                    if (rentalDTO.Id == rental.Id)
+                    {
+                        rentalDTO.FlatPhoto = rental.Flat.Photos[0].Path;
+                        rentalDTO.Address = rental.Flat.City + ", " + rental.Flat.Address;
+                    }
+                }
+            }
+
+            return rentalsDTO;
+        }
+
+        public IEnumerable<RentalDTO> GetPendingByOwnerId(string id)
+        {
+            var rentals = unitOfWork.RentalRepository.GetAll().Where(r => r.Flat.OwnerId == id).Where(r => r.RentalStatus == Status.Requested);
+            var rentalsDTO = mapper.Map<IEnumerable<RentalDTO>>(rentals);
+            foreach (var rentalDTO in rentalsDTO)
+            {
+                foreach (var rental in rentals)
+                {
+                    if (rentalDTO.Id == rental.Id)
+                    {
+                        rentalDTO.FlatPhoto = rental.Flat.Photos[0].Path;
+                        rentalDTO.Address = rental.Flat.City + ", " + rental.Flat.Address;
+                    }
+                }
+            }
+
+            return rentalsDTO;
+        }
+
+        public IEnumerable<RentalDTO> GetPendingByTenantId(string id)
+        {
+            var rentals = unitOfWork.RentalRepository.GetAll().Where(r => r.TenantId == id).Where(r => r.RentalStatus == Status.Requested);
             var rentalsDTO = mapper.Map<IEnumerable<RentalDTO>>(rentals);
             foreach (var rentalDTO in rentalsDTO)
             {
@@ -84,33 +123,14 @@ namespace MetFlat.BusinessLogic.Services
 
         public async Task Insert(RentalDTO rentalDTO)
         {
-            int flatPrice = (await flatService.GetById(rentalDTO.FlatId)).Price;
-            rentalDTO.Total = (rentalDTO.EndDate - rentalDTO.StartDate).Days * flatPrice;
             var entity = mapper.Map<Rental>(rentalDTO);
             await unitOfWork.RentalRepository.Insert(entity);
             await unitOfWork.Save();
+
+            var rentalEntity = await unitOfWork.RentalRepository.GetById(entity.Id);
+            await Notify(rentalEntity);
         }
 
-        public async Task Update(int id, RentalDTO rentalDTO)
-        {
-            var entity = await unitOfWork.RentalRepository.GetById(id);
-            if (entity != null)
-            {
-                mapper.Map(rentalDTO, entity);
-                unitOfWork.RentalRepository.Update(entity);
-                await unitOfWork.Save();
-            }
-        }
-
-        public async Task Delete(int id)
-        {
-            var entity = await unitOfWork.RentalRepository.GetById(id);
-            if (entity != null)
-            {
-                await unitOfWork.RentalRepository.Delete(id);
-                await unitOfWork.Save();
-            }
-        }
 
         public async Task ApproveRental(int id)
         {
@@ -120,20 +140,9 @@ namespace MetFlat.BusinessLogic.Services
                 entity.RentalStatus = Model.Enums.Status.Approved;
                 unitOfWork.RentalRepository.Update(entity);
                 await unitOfWork.Save();
-                Notify(entity);
+                await Notify(entity);
             }
         }
-
-        //public async Task RejectRental(int id)
-        //{
-        //    var entity = await unitOfWork.RentalRepository.GetById(id);
-        //    if (entity != null)
-        //    {
-        //        entity.RentalStatus = Model.Enums.Status.Rejected;
-        //        unitOfWork.RentalRepository.Update(entity);
-        //        await unitOfWork.Save();
-        //    }
-        //}
 
         public async Task CancelRental(int id)
         {
@@ -143,14 +152,14 @@ namespace MetFlat.BusinessLogic.Services
                 entity.RentalStatus = Model.Enums.Status.Canceled;
                 unitOfWork.RentalRepository.Update(entity);
                 await unitOfWork.Save();
-                Notify(entity);
+                await Notify(entity);
             }
         }
 
-        public async void Notify(Rental rental)
+        public async Task Notify(Rental rental)
         {
-            var tenantMail = await userManager.GetEmailAsync(await userManager.FindByIdAsync(rental.TenantId));
-            var ownerMail = await userManager.GetEmailAsync(await userManager.FindByIdAsync(rental.Flat.OwnerId));
+            var tenantMail = (await userManager.FindByIdAsync(rental.TenantId)).Email;
+            var ownerMail = (await userManager.FindByIdAsync(rental.Flat.OwnerId)).Email;
             var subject = "";
 
             switch(rental.RentalStatus)
@@ -161,36 +170,60 @@ namespace MetFlat.BusinessLogic.Services
                 case Status.Canceled:
                     subject = "The rental has been canceled.";
                     break;
+                case Status.Requested:
+                    subject = "New book request.";
+                    break;
                 default: break;
             }
 
-            var smtpClient = new SmtpClient("smtp.sendgrid.net")
-            {
-                Port = 587,
-                Credentials = new NetworkCredential("metfalt@gmail.com", "metflat12345"),
-                EnableSsl = true
-            };
+            MimeMessage message = new MimeMessage() { Subject = subject };
 
-            var mailMessage = new MailMessage()
-            {
-                From = new MailAddress("metflat@gmail.com", "MetFlat"),
-                Subject = subject,
-                Body = BuildFromTemplate(rental),
-                IsBodyHtml = true,
-            };
+            message.From.Add(new MailboxAddress("MetFlat", "metflat@ukr.net"));
+            message.To.Add(new MailboxAddress("Tenant", tenantMail));
+            message.To.Add(new MailboxAddress("Owner", ownerMail));
 
-            mailMessage.To.Add(tenantMail);
-            mailMessage.To.Add(ownerMail);
-            smtpClient.Send(mailMessage);
+            BodyBuilder bodyBuilder = new BodyBuilder();
+            bodyBuilder.HtmlBody = await BuildFromTemplate(rental);
+            message.Body = bodyBuilder.ToMessageBody();
+
+            SmtpClient client = new SmtpClient();
+            client.Connect("smtp.ukr.net", 465, true);
+            client.Authenticate("metflat@ukr.net", "uKPDWm9JdqlGGD9S");
+
+            try 
+            { 
+            client.Send(message);
+            client.Disconnect(true);
+            client.Dispose();
+            } catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
-        private string BuildFromTemplate(Rental rental)
+        private async Task<string> BuildFromTemplate(Rental rental)
         {
-            var tenant = userManager.FindByIdAsync(rental.TenantId).Result;
-            var owner = userManager.FindByIdAsync(rental.Flat.OwnerId).Result;
+            var tenant = await userManager.FindByIdAsync(rental.TenantId);
+            var owner = rental.Flat.Owner;
             var builder = new StringBuilder(File.ReadAllText("..\\Metflat.BusinessLogic\\EmailTemplate.html"));
 
-            builder.Replace("[status]", rental.RentalStatus.ToString());
+            var mainInfo = "";
+            switch (rental.RentalStatus)
+            {
+                case Status.Approved:
+                    mainInfo = "Book request has been approved.";
+                    break;
+                case Status.Canceled:
+                    mainInfo = "Book request has been canceled.";
+                    break;
+                case Status.Requested:
+                    mainInfo = "New book request.";
+                    break;
+                default: break;
+            }
+
+            builder.Replace("[main_info]", mainInfo);
+            builder.Replace("[address]", rental.Flat.City + ", " + rental.Flat.Address);
             builder.Replace("[check-in]", rental.StartDate.ToString());
             builder.Replace("[check-out]", rental.EndDate.ToString());
             builder.Replace("[owner]", owner.UserName);

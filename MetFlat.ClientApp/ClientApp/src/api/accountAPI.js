@@ -11,3 +11,9 @@ export const login = async (user) => {
         return res
     })
 }
+
+export const register = async (user) => {
+    return await axios.post(`https://localhost:44356/api/account/register`, user).then(res => {
+        return res
+    })
+}

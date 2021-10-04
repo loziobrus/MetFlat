@@ -6,6 +6,7 @@ import ResultContainer from '../../containers/ResultContainer/ResultContainer';
 import ProfileContainer from '../../containers/ProfileContainer/ProfileContainer'
 import FlatDetailsContainer from '../../containers/FlatDetailsContainer/FlatDetailsContainer'
 import HistoryContainer from '../../containers/HistoryContainer/HistoryContainer'
+import AddFlatContainer from '../../containers/AddFlatContainer/AddFlatContainer'
 import Sidebar from '../Sidebar/Sidebar';
 import './styles.css';  
 
@@ -21,6 +22,7 @@ class Layout extends React.Component {
                     <Route exact path="/myProfile" component={ProfileContainer} />
                     <Route exact path="/flat" component={FlatDetailsContainer} />
                     <Route exact path="/history" component={HistoryContainer} />
+                    <Route exact path="/addFlat" component={AddFlatContainer} />
                 </Switch>
             </div>
         )

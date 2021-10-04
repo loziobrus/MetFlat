@@ -51,7 +51,7 @@ namespace MetFlat.API
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IAccountService, AccountService>();
-            services.AddTransient<IFlatService, FlatService>();
+            services.AddScoped<IFlatService, FlatService>();
             services.AddTransient<IRentalService, RentalService>();
 
 

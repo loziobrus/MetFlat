@@ -36,7 +36,7 @@ namespace MetFlat.BusinessLogic.Services
             throw new FormatException("User doesn't exist or wrong password.");
         }
 
-        public async Task<UserLoginDTO> SignUp(UserRegisterDTO userDTO)
+        public async Task<UserDTO> SignUp(UserRegisterDTO userDTO)
         {
             if(await _userManager.FindByEmailAsync(userDTO.Email) != null)
             {
@@ -57,11 +57,8 @@ namespace MetFlat.BusinessLogic.Services
             {
                 await _signInManager.SignInAsync(user, isPersistent: true);
                 var userEntity = await _userManager.FindByEmailAsync(userDTO.Email);
-                var newDto = new UserLoginDTO
-                {
-                    UserName = userEntity.UserName,
-                    Password = userEntity.PasswordHash
-                };
+                var newDto = new UserDTO();
+                _mapper.Map(userEntity, newDto);
                 return newDto;
             }
             else

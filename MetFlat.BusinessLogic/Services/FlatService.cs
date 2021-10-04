@@ -32,6 +32,12 @@ namespace MetFlat.BusinessLogic.Services
             return mapper.Map<IEnumerable<FlatDTO>>(flats);
         }
 
+        public async Task<IEnumerable<FlatDTO>> GetInactive()
+        {
+            var flats = (await unitOfWork.FlatRepository.GetAll()).Where(f => f.IsActive == false);
+            return mapper.Map<IEnumerable<FlatDTO>>(flats);
+        }
+
         public async Task<FlatDTO> GetById(int id)
         {
             var flat = await unitOfWork.FlatRepository.GetById(id);
@@ -49,7 +55,7 @@ namespace MetFlat.BusinessLogic.Services
                 var newPhoto = new Photo
                 {
                     FlatId = entity.Id,
-                    Path = photo.Path,
+                    Path = photo.Path
                 };
                 await unitOfWork.PhotoRepository.Insert(newPhoto);
                 await unitOfWork.Save();
@@ -77,6 +83,27 @@ namespace MetFlat.BusinessLogic.Services
             if (entity != null)
             {
                 entity.IsActive = false;
+                try
+                { 
+                    unitOfWork.FlatRepository.Update(entity);
+                } catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                await unitOfWork.Save();
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
+        }
+
+        public async Task Activate(int id)
+        {
+            var entity = await unitOfWork.FlatRepository.GetById(id);
+            if (entity != null)
+            {
+                entity.IsActive = true;
                 unitOfWork.FlatRepository.Update(entity);
                 await unitOfWork.Save();
             }
@@ -98,7 +125,7 @@ namespace MetFlat.BusinessLogic.Services
 
         public async Task<IEnumerable<FlatDTO>> GetByOwnerId(string id)
         {
-            var flats = unitOfWork.FlatRepository.GetAll().Where(f => f.OwnerId == id);
+            var flats = await unitOfWork.FlatRepository.GetByOwnerId(id);
             return mapper.Map<IEnumerable<FlatDTO>>(flats);
         }
     }

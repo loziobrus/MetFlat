@@ -1,6 +1,6 @@
 .city-input {
     width: 200px !important;
-    background-color: white;
+    background-color: #e8e8e8;
     border-radius: 4px;
 }
 
@@ -36,7 +36,7 @@
 
 .filter-button {
     height: 40px;
-    background-color: white;
+    background-color: #e8e8e8;
     border-radius: 4px;
     width: 135px;
     padding-left: 10px !important;

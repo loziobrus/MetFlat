@@ -46,3 +46,9 @@
 .guest-select {
     margin-top: 17px;
 }
+
+
+
+.MuiPaper-root .MuiPickersDay-daySelected {
+    background-color: #A272DC !important;
+}

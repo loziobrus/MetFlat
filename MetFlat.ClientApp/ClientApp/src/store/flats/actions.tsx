@@ -6,7 +6,10 @@ import {
     IEditFlat,
     ISetFlats,
     ISetFlat,
-    ISetFlatOwner
+    ISetFlatOwner,
+    ISetFilters,
+    IActivateFlat,
+    IDeactivateFlat
 } from "./types"
 
 export const SetFlats: ActionCreator<ISetFlats> = (flats: any[]) => ({
@@ -17,6 +20,11 @@ export const SetFlats: ActionCreator<ISetFlats> = (flats: any[]) => ({
 export const SetFlat: ActionCreator<ISetFlat> = (flat: any) => ({
     type: FlatActionTypes.SET_FLAT,
     payload: { flat }
+})
+
+export const SetFilters: ActionCreator<ISetFilters> = (filters: any) => ({
+    type: FlatActionTypes.SET_FILTERS,
+    payload: { filters }
 })
 
 export const SetFlatOwner: ActionCreator<ISetFlatOwner> = (owner: any) => ({
@@ -36,5 +44,15 @@ export const EditFlat: ActionCreator<IEditFlat> = (id: number, flat: any) => ({
 
 export const DeleteFlat: ActionCreator<IDeleteFlat> = (id: number) => ({
     type: FlatActionTypes.DELETE_FLAT,
+    payload: { id }
+})
+
+export const ActivateFlat: ActionCreator<IActivateFlat> = (id: number) => ({
+    type: FlatActionTypes.ACTIVATE_FLAT,
+    payload: { id }
+})
+
+export const DeactivateFlat: ActionCreator<IDeactivateFlat> = (id: number) => ({
+    type: FlatActionTypes.DEACTIVATE_FLAT,
     payload: { id }
 })

@@ -8,6 +8,10 @@ namespace MetFlat.DataAccess.Interfaces.Repositories
     {
         public Task<IEnumerable<Flat>> GetFiltered(FlatFilters filters);
 
-        public Task<Flat> GetById(int id);
+        public new Task<IEnumerable<Flat>> GetAll();
+
+        public Task<IEnumerable<Flat>> GetByOwnerId(string id);
+
+        public new Task<Flat> GetById(int id);
     }
 }

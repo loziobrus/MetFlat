@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Switch } from 'react-router';
-import { Route } from 'react-router-dom'
+import { connect } from 'react-redux'
 import History from '../../components/History/History'
 import AdBanner from '../../components/AdBanner/AdBanner'
 import './styles.css';  
@@ -11,7 +11,7 @@ import { getRentalsByTenant } from '../../api/rentalsAPI'
 
 class HistoryContainer extends React.Component {
     componentDidMount = () => {
-        getRentalsByTenant("23efce81-3552-4b77-93e8-9e64c3955063").then(res => {
+        getRentalsByTenant(this.props.user.id).then(res => {
             store.dispatch(SetRentals(res.data))
         })
     }
@@ -26,4 +26,10 @@ class HistoryContainer extends React.Component {
     }
 }
 
-export default HistoryContainer
+const mapStateToProps = state => {
+    const { user } = state.auth
+  
+    return { user }
+}
+
+export default connect(mapStateToProps)(HistoryContainer)

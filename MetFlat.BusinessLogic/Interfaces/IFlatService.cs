@@ -11,6 +11,8 @@ namespace MetFlat.BusinessLogic.Interfaces
 
         public Task<IEnumerable<FlatDTO>> GetFiltered(FlatFilters filters);
 
+        public Task<IEnumerable<FlatDTO>> GetInactive();
+
         public Task<FlatDTO> GetById(int id);
 
         public Task<IEnumerable<FlatDTO>> GetByOwnerId(string id);
@@ -20,6 +22,8 @@ namespace MetFlat.BusinessLogic.Interfaces
         public void Update(int id, FlatDTO flatDTO);
 
         public Task Delete(int id);
+
+        public Task Activate(int id);
 
         public Task Deactivate(int id);
     }

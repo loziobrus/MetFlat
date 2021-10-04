@@ -1,5 +1,6 @@
 ﻿using MetFlat.BusinessLogic.Interfaces;
 using MetFlat.Model.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 namespace MetFlat.API.Controllers
 {
     [Route("api/[controller]")]
+    [AllowAnonymous]
     public class RentalController : Controller
     {
         public readonly IRentalService rentalService;
@@ -38,6 +40,20 @@ namespace MetFlat.API.Controllers
             return Ok(rentals);
         }
 
+        [HttpGet("getPendingByOwner/{id}")]
+        public ActionResult<IEnumerable<RentalDTO>> GetPendingByOwner(string id)
+        {
+            var rentals = rentalService.GetPendingByOwnerId(id);
+            return Ok(rentals);
+        }
+
+        [HttpGet("getPendingByTenant/{id}")]
+        public ActionResult<IEnumerable<RentalDTO>> GetPendingByTenant(string id)
+        {
+            var rentals = rentalService.GetPendingByTenantId(id);
+            return Ok(rentals);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<RentalDTO>> GetById(int id)
         {
@@ -57,6 +73,7 @@ namespace MetFlat.API.Controllers
         }
 
         [HttpPost("addRental")]
+        [AllowAnonymous]
         public async Task<IActionResult> Add([FromBody] RentalDTO rental)
         {
             try
@@ -70,39 +87,7 @@ namespace MetFlat.API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Edit(int id, [FromBody] RentalDTO rental)
-        {
-            try
-            {
-                rentalService.Update(id, rental);
-                return Ok("Rental has been updated successfully.");
-            }
-            catch (NullReferenceException)
-            {
-                return NotFound("Rental not found.");
-            }
-            catch (Exception e)
-            {
-                return Problem(e.Message);
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                await rentalService.Delete(id);
-                return Ok("Rental has been deleted successfully.");
-            }
-            catch (Exception e)
-            {
-                return Problem(e.Message);
-            }
-        }
-
-        [HttpPut("approve{id}")]
+        [HttpPut("approve/{id}")]
         public async Task<IActionResult> Approve(int id)
         {
             try
@@ -115,20 +100,6 @@ namespace MetFlat.API.Controllers
                 return Problem(e.Message);
             }
         }
-
-        //[HttpPut("reject/{id}")]
-        //public async Task<IActionResult> Reject(int id)
-        //{
-        //    try
-        //    {
-        //        await rentalService.RejectRental(id);
-        //        return Ok("Rental has been rejected successfully.");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return Problem(e.Message);
-        //    }
-        //}
 
         [HttpPut("cancel/{id}")]
         public async Task<IActionResult> Cancel(int id)

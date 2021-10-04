@@ -6,6 +6,9 @@ import {
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import logo from '../Sidebar/logo.png'
+import { register } from '../../api/accountAPI';
+import { store } from '../..';
+import { SetUser } from '../../store/auth/actions';
 
 interface IState {
   user: any,
@@ -19,8 +22,10 @@ class Register extends Component<RouteComponentProps, IState> {
     
     this.state = {
       user: {
-        username: "",
+        name: "",
         password: "",
+        age: 0,
+        email: ""
       },
       usernameError: "",
       passwordError: ""
@@ -28,10 +33,10 @@ class Register extends Component<RouteComponentProps, IState> {
   }
   
   
-  handleUsernameChange = (username) => {
+  handleUsernameChange = (property, value) => {
     const user = {
       ...this.state.user,
-      username: username.target.value,
+      [property]: value.target.value,
     }
     this.setState({ user })
   }
@@ -44,35 +49,28 @@ class Register extends Component<RouteComponentProps, IState> {
     this.setState({ user })  
   }
   
-  handleLoginSubmit = (event) => {
+  handleRegisterSubmit = (event) => {
     event.preventDefault();
 
-
-
-    // login(this.state.user).then(res => {
-    //     if(res.status === 'Success')
-    //     {
-    //       store.dispatch(SetUser(res.data))
-    //       userRole = res.data.role
-    //       if(userRole === Roles.Admin)
-    //        history.push('/admin/companies')
-    //       else if(userRole === Roles.CompanyAdmin)
-    //        history.push('/admin/employees')
-    //     } else {
-    //       if(res.data === "User with this username doesn't exist.")
-    //         this.setState({ usernameError: res.data})
-    //       if(res.data === "Wrong password.")
-    //         this.setState({ passwordError: res.data})
-    //     }
-    //   })
-
+    register(this.state.user).then(res => {
+        if(res.status === 200)
+        {
+          store.dispatch(SetUser(res.data))
+          this.props.history.push('/')
+        } else {
+          if(res.data === "User with this username doesn't exist.")
+            this.setState({ usernameError: res.data})
+          if(res.data === "Wrong password.")
+            this.setState({ passwordError: res.data})
+        }
+      })
   }  
       
   render () {
     const { usernameError, passwordError } = this.state
 
     return (
-      <form action="" className="register-container">{/* onSubmit={this.handleLoginSubmit}>*/}
+      <form action="" className="register-container">{/* onSubmit={this.handleRegisterSubmit}>*/}
         <div className="login-form">
             <div className="logo">
                 <img className="logo" src={logo} alt="lol"/>
@@ -82,19 +80,19 @@ class Register extends Component<RouteComponentProps, IState> {
                     <label>Create new account</label>
                 </div>
                 <div className="input-box">
-                    <TextField className="login-input" label="Name" type="text" variant="filled" onChange={this.handleUsernameChange} helperText={usernameError} required />
+                    <TextField className="login-input" label="Name" type="text" variant="filled" onChange={name => this.handleUsernameChange("name", name)} helperText={usernameError} required />
                 </div>
                 <div className="input-box">
-                    <TextField className="login-input" label="Age" type="text" variant="filled" onChange={this.handleUsernameChange} helperText={usernameError} required />
+                    <TextField className="login-input" label="Age" type="text" variant="filled" onChange={age => this.handleUsernameChange("age", age)} helperText={usernameError} required />
                 </div>
                 <div className="input-box">
-                    <TextField className="login-input" label="Email" type="text" variant="filled" onChange={this.handleUsernameChange} helperText={usernameError} required />
+                    <TextField className="login-input" label="Email" type="text" variant="filled" onChange={email => this.handleUsernameChange("email", email)} helperText={usernameError} required />
                 </div>
                 <div className="input-box">
                     <TextField className="login-input" label="Password" type="password" variant="filled" onChange={this.handlePasswordChange} helperText={passwordError} required />
                 </div>
                 <div className="button-box">
-                    <Button className="submit-button" type="submit" onClick={this.handleLoginSubmit}>Create</Button>
+                    <Button className="submit-button" type="submit" onClick={this.handleRegisterSubmit}>Create</Button>
                 </div>
                 <div className="text-container">
                   <label className="just-text">or</label>

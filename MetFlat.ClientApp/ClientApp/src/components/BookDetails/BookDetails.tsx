@@ -4,14 +4,23 @@ import { ApplicationState } from '../../store'
 import { IAuthState } from '../../store/auth/types'
 import { IFlatState } from '../../store/flats/types'
 import './styles.css'
-import { Button } from '@material-ui/core'
+import { Button, Dialog, TextField, Snackbar } from '@material-ui/core'
 import moment from 'moment'
 import DateFnsUtils from '@date-io/date-fns'
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import { addRental } from '../../api/rentalsAPI'
+import { store } from '../..'
+import { login } from '../../api/accountAPI'
+import { SetUser } from '../../store/auth/actions'
+import { threadId } from 'worker_threads'
+
 
 interface IState {
     rental: any,
-    nights: number
+    user: any,
+    nights: number,
+    loginOpen: boolean,
+    snackBarOpen: boolean
 }
 
 class BookDetails extends Component<IFlatState & IAuthState, IState> {
@@ -20,6 +29,7 @@ class BookDetails extends Component<IFlatState & IAuthState, IState> {
 
         this.state = {
             rental: {
+                id: 0,
                 flatId: 0,
                 tenantId: 0,
                 rentalStatus: 0,
@@ -27,15 +37,35 @@ class BookDetails extends Component<IFlatState & IAuthState, IState> {
                 endDate: moment().add(1, 'days'),
                 total: 0
             },
-            nights: 1
+            user: {
+                username: "",
+                password: "",
+            },
+            nights: 1,
+            loginOpen: false,
+            snackBarOpen: false
         }
     }
 
     componentDidMount = () => {
-        const total = this.state.nights * this.props.currentFlat.price
-        this.setState({ rental: {
-            ...this.state.rental,
-            total }})
+        const { currentFlat, filters, user } = this.props
+
+        const nights = Math.round(moment.duration(moment(filters.endDate).diff(moment(filters.startDate))).asDays())
+
+        const total = nights * currentFlat.price
+        this.setState({ 
+            rental: {
+                ...this.state.rental,
+                flatId: currentFlat.id,
+                flatPhoto: currentFlat.mainPhoto,
+                address: currentFlat.address,
+                total,
+                tenantId: user.id,
+                startDate: filters.startDate,
+                endDate: filters.endDate, 
+            },
+            nights
+        })
     }
 
     onValueChange = (property, value) => {
@@ -44,29 +74,93 @@ class BookDetails extends Component<IFlatState & IAuthState, IState> {
         const end = moment(value)
         const nights = Math.round(moment.duration(end.diff(start)).asDays())
 
-        const rentaNew = {
-            ...this.state.rental,
-            [property]: value,
-            total: nights * this.props.currentFlat.price
+        if(property === "startDate") {
+            const rentaNew = {
+                ...this.state.rental,
+                [property]: value,
+                endDate: moment(value).add(1, 'days'),
+                total: nights * this.props.currentFlat.price,
+            }
+            
+            this.setState({ rental: rentaNew, nights })
+        } else {
+            const rentaNew = {
+                ...this.state.rental,
+                [property]: value,
+                total: nights * this.props.currentFlat.price,
+            }
+            
+            this.setState({ rental: rentaNew, nights })
         }
-
-        this.setState({ rental: rentaNew })
     }
 
     handleBook = () => {
-        const rental = {
-            ...this.state.rental,
-            flatId: this.props.currentFlat.id,
-            total: this.state.rental.endDate.diff(this.state.rental.startDate, 'days') * this.props.currentFlat.price
+        if(this.props.user.id)
+        {
+            console.log(this.state.rental)
+            addRental(this.state.rental).then(res => {
+                this.setState({ snackBarOpen: true })
+            })
         }
-
-        this.setState({ rental })
-
-        console.log(this.state.rental)
+        else
+            this.setState({ loginOpen: true })
     }
 
+    handleClose = () => {
+        this.setState({ loginOpen: false })
+    }
+
+    handleSnackBarClose = () => {
+        this.setState({ snackBarOpen: false })
+    }
+
+    handleUsernameChange = (username) => {
+        const user = {
+          ...this.state.user,
+          username: username.target.value,
+        }
+        this.setState({ user })
+    }
+      
+    handlePasswordChange = (password) => {
+        const user = {
+          ...this.state.user,
+          password: password.target.value,
+        }
+        this.setState({ user })  
+    }
+      
+    handleLoginSubmit = (event) => {
+        event.preventDefault();
+    
+        login(this.state.user).then(res => {
+          if(res.status == 200)
+            {
+              store.dispatch(SetUser(res.data))
+              
+              const rental = {
+                  ...this.state.rental,
+                  tenantId: this.props.user.id
+              }
+
+              this.setState({ rental })
+              
+              if(this.props.user.id)
+              {
+                  console.log(this.state.rental)
+                  addRental(this.state.rental).then(res => {
+                      this.setState({ snackBarOpen: true })
+                      this.handleClose()
+                  })
+              }
+              else
+                  this.setState({ loginOpen: true })
+            }
+        })
+    }  
+
     render() {
-        const { rental, nights } = this.state
+        const { rental, nights, loginOpen, snackBarOpen } = this.state
         const { flatOwner } = this.props
 
         return(
@@ -75,7 +169,7 @@ class BookDetails extends Component<IFlatState & IAuthState, IState> {
                         <div className="book-details">
                             <div className="name-photo">
                                 <h4>{flatOwner.name}</h4>
-                                <img className="avatar" src={`../images/users/${flatOwner.photo}`} alt="lol" />
+                                <img className="avatar" src={flatOwner.photo ? `../images/users/${flatOwner.photo}` : "../images/users/profile.png"} alt="lol" />
                             </div>
                             <div className="user-data">
                                 <div className="user-fields">
@@ -125,11 +219,41 @@ class BookDetails extends Component<IFlatState & IAuthState, IState> {
                                 </MuiPickersUtilsProvider>
                             </div>
                             <div className="summary">
-                                <label>{rental.total} UAH / {nights} nights</label>
+                                <label>{rental.total} UAH / {nights} {nights > 1 ? "nights" : "night"}</label>
                                 <Button className="book-button" onClick={this.handleBook}>Book</Button>             
                             </div>
+                            <Dialog open={loginOpen} onClose={this.handleClose}>
+                                <form action="" className="form-container">{/* onSubmit={this.handleLoginSubmit}>*/}
+                                    <div className="login-book">
+                                        <div className="form-fields">
+                                            <div className="form-head">
+                                                <label>Please log in</label>
+                                            </div>
+                                            <div className="input-box">
+                                                <TextField className="login-input" label="Email" type="text" variant="filled" onChange={this.handleUsernameChange} required />
+                                            </div>
+                                            <div className="input-box">
+                                                <TextField className="login-input" label="Password" type="password" variant="filled" onChange={this.handlePasswordChange} required />
+                                            </div>
+                                            <div className="button-box">
+                                                <Button className="submit-button" type="submit" onClick={this.handleLoginSubmit}>Log in</Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </Dialog>
                         </div>
                     </form>
+                    <Snackbar 
+                        open={snackBarOpen} 
+                        onClose={this.handleSnackBarClose} 
+                        message="Book request sent"
+                        autoHideDuration={4000} 
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'center',
+                        }} 
+                    />   
             </header>
         )
     }
@@ -137,10 +261,10 @@ class BookDetails extends Component<IFlatState & IAuthState, IState> {
 
 
 const mapStateToProps = (state: ApplicationState): Partial<IFlatState & IAuthState> => {
-    const { flats, flatOwner, currentFlat } = state.flats
+    const { flats, flatOwner, currentFlat, filters } = state.flats
     const { user } = state.auth
   
-    return { flats, user, flatOwner, currentFlat }
+    return { flats, user, flatOwner, currentFlat, filters }
 }
 
 export default connect(mapStateToProps)(BookDetails)

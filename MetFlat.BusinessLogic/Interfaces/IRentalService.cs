@@ -13,15 +13,15 @@ namespace MetFlat.BusinessLogic.Interfaces
 
         public IEnumerable<RentalDTO> GetByTenantId(string id);
 
+        public IEnumerable<RentalDTO> GetPendingByOwnerId(string id);
+
+        public IEnumerable<RentalDTO> GetPendingByTenantId(string id);
+
         public Task<RentalDTO> GetById(int Id);
 
         public Task Insert(RentalDTO rentalDTO);
 
-        public Task Update(int id, RentalDTO rentalDTO);
-
-        public Task Delete(int id);
-
-        public void Notify(Rental rental);
+        public Task Notify(Rental rental);
 
         public Task ApproveRental(int id);
 

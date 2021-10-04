@@ -36,6 +36,25 @@
     width: 200px;
 }
 
+.form-container .login-book {
+    min-width: 400px;
+    min-height: 350px;
+    background-color: #221830;
+    box-shadow: 0 0 10px #171020;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+
+.login-book .form-head label {
+    color: #BCA5D7;
+    font-size: 22px;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
 .book-details .buttons-container {
     height: auto;
 }

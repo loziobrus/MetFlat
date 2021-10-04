@@ -26,6 +26,13 @@ namespace MetFlat.API.Controllers
             return Ok(flats);
         }
 
+        [HttpGet("inactive")]
+        public async Task<ActionResult<IEnumerable<FlatDTO>>> GetInactive()
+        {
+            var flats = await flatService.GetInactive();
+            return Ok(flats);
+        }
+
         [HttpGet("getByOwner/{id}")]
         public async Task<ActionResult<IEnumerable<FlatDTO>>> GetByOwnerId(string id)
         {
@@ -97,13 +104,31 @@ namespace MetFlat.API.Controllers
             }
         }
 
-        [HttpPut("deactivate{id}")]
-        public IActionResult Deactivate(int id)
+        [HttpPut("deactivate/{id}")]
+        public async Task<IActionResult> Deactivate(int id)
         {
             try
             {
-                flatService.Deactivate(id);
+                await flatService.Deactivate(id);
                 return Ok("Flat has been deactivated successfully.");
+            }
+            catch (NullReferenceException)
+            {
+                return NotFound("Flat not found.");
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
+        }
+
+        [HttpPut("activate/{id}")]
+        public async Task<IActionResult> Activate(int id)
+        {
+            try
+            {
+                await flatService.Activate(id);
+                return Ok("Flat has been activated successfully.");
             }
             catch (NullReferenceException)
             {
@@ -116,3 +141,4 @@ namespace MetFlat.API.Controllers
         }
     }
 }
+

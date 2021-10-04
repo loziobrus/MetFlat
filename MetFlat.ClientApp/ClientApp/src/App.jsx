@@ -13,7 +13,7 @@ export default () => (
     <div>
 
         {/* <Layout /> */}
-        <Route exact path='/(|search|myProfile|flat|history)' component={Layout} />
+        <Route exact path='/(|search|myProfile|flat|history|addFlat)' component={Layout} />
         <Route path='/login' component={Login} />
         <Route path='/register' component={Register} />
         <Route path='/counter' component={Counter} />

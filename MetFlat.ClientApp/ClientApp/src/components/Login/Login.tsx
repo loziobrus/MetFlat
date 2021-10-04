@@ -55,7 +55,6 @@ class Login extends Component<RouteComponentProps & IAuthState, IState> {
     event.preventDefault();
 
     login(this.state.user).then(res => {
-      console.log(res)
       if(res.status == 200)
         {
           store.dispatch(SetUser(res.data))
@@ -67,7 +66,6 @@ class Login extends Component<RouteComponentProps & IAuthState, IState> {
             this.setState({ passwordError: res.data})
         }
       })
-
   }  
       
   render () {

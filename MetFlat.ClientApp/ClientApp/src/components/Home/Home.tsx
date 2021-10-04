@@ -12,11 +12,11 @@ import SearchIcon from '@material-ui/icons/Search';
 import CheckIcon from '@material-ui/icons/Check';
 import Button from '@material-ui/core/Button';
 import { addFlat, getFlat, getFlats, deleteFlat, editFlat } from '../../api/flatsAPI'
-import { SetFlats } from '../../store/flats/actions'
+import { SetFilters, SetFlats } from '../../store/flats/actions'
 import { store } from '../..'
 import { RouteComponentProps } from "react-router-dom";
 
-const cities = ['Lviv', 'Kyiv', 'Rivne', 'Dnipro']
+const cities = ['Lviv', 'Kyiv', 'Rivne', 'Dnipro', 'Ivano-Frankivsk', 'Kharkiv', 'Lutsk', 'Chernivtsi', 'Malyn', 'Chernihiv', 'Cherkasy', 'Odesa', 'Sumy', 'Uzhhorod', 'Stryi', 'Kolomyia', 'Donetsk']
 
 interface IState {
   filters: any
@@ -36,12 +36,24 @@ class Home extends React.Component<RouteComponentProps, IState> {
   }
 
   onValueChange = (property, value) => {
-    const filters = {
-      ...this.state.filters,
-      [property]: value
+    if(property === "startDate") {
+      const filters = {
+        ...this.state.filters,
+        [property]: value,
+        endDate: moment(value).add(1, 'days')
+      }
+      
+      this.setState({ filters })
+      store.dispatch(SetFilters(filters))
+    } else {
+      const filters = {
+        ...this.state.filters,
+        [property]: value,
+      }
+      
+      this.setState({ filters })
+      store.dispatch(SetFilters(filters))
     }
-
-    this.setState({ filters })
   }
 
   onGuestNumberChange = value => {
@@ -51,6 +63,7 @@ class Home extends React.Component<RouteComponentProps, IState> {
     }
 
     this.setState({ filters })
+    store.dispatch(SetFilters(filters))
   }
 
   onCityChange = (e, value) => {
@@ -60,6 +73,7 @@ class Home extends React.Component<RouteComponentProps, IState> {
     }
 
     this.setState({ filters })
+    store.dispatch(SetFilters(filters))
   }
   
   handleSubmit = (event) => {

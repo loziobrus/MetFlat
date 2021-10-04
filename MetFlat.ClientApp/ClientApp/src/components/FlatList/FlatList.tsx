@@ -8,19 +8,29 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '../../store';
 
 class FlatList extends React.Component<IFlatState> {
+    constructor(props) {
+        super(props)
+    }
+
     render() {
         const { flats } = this.props
 
         return (
             <div className="list-container">
                 <Grid container>
-                    {flats.map(f => {
+                    {flats.length > 0 ? flats.map(f => {
                         return(
                             <Grid item xs={4}>
                                 <FlatCard flat={f}/>
                             </Grid>
                         )
-                    })}
+                    }) : 
+                    <div className="empty-list">
+                        <h4>
+                            No apartments have been added yet
+                        </h4>
+                    </div>
+                    }
                 </Grid>
             </div>
         )

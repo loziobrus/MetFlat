@@ -1,20 +1,9 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom'
-import { Grid } from "@material-ui/core"
-import FlatCard from '../FlatCard/FlatCard'
 import {
     FormControlLabel, Checkbox
 } from '@material-ui/core'
 import './styles.css';  
-import { IFlatState } from '../../store/flats/types';
 import { connect } from 'react-redux';
-import { ApplicationState } from '../../store';
-import { IAuthState } from '../../store/auth/types';
-import AddIcon from '@material-ui/icons/Add';
-import FlatList from '../FlatList/FlatList'
-import { getFlatsByOwner } from '../../api/flatsAPI';
-import { store } from '../..';
-import { SetFlats } from '../../store/flats/actions';
 import Carousel from 'react-elastic-carousel';
 
 

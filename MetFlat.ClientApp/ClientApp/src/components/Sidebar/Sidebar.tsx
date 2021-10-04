@@ -28,20 +28,24 @@ class Sidebar extends Component<IAuthState> {
                     <Link to="/login">
                         <label className="sidebar-name">{user.name ? user.name : "Log in"}</label>
                     </Link>
-                    <Link to="/">
-                        <BookmarkBorderIcon className="iconClass" fontSize="large"/>
-                        <label className="sidebar-tab">Book</label>
-                    </Link>
+                    {user.name !== 'Moderator' && 
+                        <Link to="/">
+                            <BookmarkBorderIcon className="iconClass" fontSize="large"/>
+                            <label className="sidebar-tab">Book</label>
+                        </Link>
+                    }
                     <Link to="/myProfile">
                         <AccountCircleIcon className="iconClass" fontSize="large"/>
                         <label className="sidebar-tab">My Profile</label>
                     </Link>
-                    <Link to="/history">
-                        <HistoryIcon className="iconClass" fontSize="large"/>
-                        <label className="sidebar-tab">History</label>
-                    </Link>
+                    {user.name !== 'Moderator' && 
+                        <Link to="/history">
+                            <HistoryIcon className="iconClass" fontSize="large"/>
+                            <label className="sidebar-tab">History</label>
+                        </Link>
+                    }
                 </div>
-                <Link to="/logout">
+                <Link to="/login">
                     <ExitToAppIcon className="iconClass" fontSize="large"/>
                     <label className="sidebar-tab">Log out</label>
                 </Link>

@@ -21,5 +21,17 @@ namespace MetFlat.DataAccess.Repositories
 
             return query;
         }
+
+        public new async Task<Rental> GetById(int id)
+        {
+            var rentals = _dbContext.Set<Rental>().Where(f => f.Id == id);
+            if (rentals != null)
+            {
+                rentals = rentals.Include(r => r.Flat).ThenInclude(f => f.Owner);
+                return (await rentals.ToArrayAsync()).FirstOrDefault();
+            }
+            else
+                return null;
+        }
     }
 }

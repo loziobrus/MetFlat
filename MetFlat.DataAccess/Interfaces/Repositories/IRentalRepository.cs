@@ -7,5 +7,8 @@ namespace MetFlat.DataAccess.Interfaces.Repositories
     public interface IRentalRepository : IBaseRepository<Rental, int>
     {
         public IQueryable<Rental> GetAll();
+
+        public new Task<Rental> GetById(int id);
+
     }
 }

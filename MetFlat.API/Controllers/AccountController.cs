@@ -38,7 +38,7 @@ namespace MetFlat.API.Controllers
 
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<ActionResult<UserLoginDTO>> SignUp([FromBody] UserRegisterDTO user)
+        public async Task<ActionResult<UserDTO>> SignUp([FromBody] UserRegisterDTO user)
         {
             try
             {
